@@ -9,12 +9,15 @@ class ReadWriteWav:
     """
 
     sample_data = []
+    encoded_data = []
 
     def __init__(self, read_filename=None):
         """Initialize readWriteWav
         :param read_filename: if none creates an empty array to stream to.
         """
         self.sample_data = []
+        self.encoded_data = []
+
         if read_filename is not None:
             self.get_sample_data(read_filename)
 
@@ -65,13 +68,17 @@ class ReadWriteWav:
 
         return self.sample_data[start_position:(start_position+length)]
 
-    def add_sample(self, value):
+    def add_sample(self, value, encode=False):
 
         self.sample_data.append(value)
+        if encode:
+            self.encode_sample(len(self.sample_data)-1, True)
 
-    def set_sample(self, sample_numb, value):
+    def set_sample(self, sample_numb, value, encode=False):
 
         self.sample_data[sample_numb] = value
+        if encode:
+            self.encode_sample(sample_numb)
 
     def combine_samples(self, sample_numb, value):
 
@@ -102,14 +109,16 @@ class ReadWriteWav:
 
         return value
 
+    def encode_sample(self, sample_id, add_sample=False):
 
-    def write_sample_data(self, filename, channels=1, sample_rate=44100):
+        encoded_sample = ReadWriteWav.sample_value_to_byte(self.sample_data[sample_id])
 
-        write_file = ReadWriteWav.open_write_wav_file(filename)
-        write_file.setparams(
-            (channels, 2, sample_rate,
-             len(self.sample_data), "NONE", "not compressed")
-        )
+        if add_sample:
+            self.encoded_data.append(encoded_sample)
+        else:
+            self.encoded_data[sample_id] = encoded_sample
+
+    def encode_samples(self):
 
         byte_data = []
 
@@ -117,7 +126,35 @@ class ReadWriteWav:
         for sample in self.sample_data:
             byte_data.append(ReadWriteWav.sample_value_to_byte(sample))
 
-        byte_str = b''.join(byte_data)
+        self.encoded_data = byte_data
+
+    def write_sample_data(self, filename, encode=True, channels=1, sample_rate=44100):
+        """Write sample data to to wave file.
+
+        :param filename:        file name for wav file
+        :param encode:          should the sample data be encoded
+        :param channels:        amount of channels
+        :param sample_rate:     sample rate
+        :return:                None
+        """
+
+        write_file = ReadWriteWav.open_write_wav_file(filename)
+        write_file.setparams(
+            (channels, 2, sample_rate,
+             len(self.sample_data), "NONE", "not compressed")
+        )
+        '''
+                byte_data = []
+        
+                # convert sample data into bytes
+                for sample in self.sample_data:
+                    byte_data.append(ReadWriteWav.sample_value_to_byte(sample))
+        '''
+
+        if encode:
+            self.encode_samples()
+
+        byte_str = b''.join(self.encoded_data)
         write_file.writeframesraw(byte_str)
 
         write_file.close()
