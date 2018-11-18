@@ -101,6 +101,9 @@ def get_saw_wave_tone(current_sample, sample_rate, frequency):
 def triangle_tone(freq_1_name, freq_1_key, sample_rate, length):
 
     sound = wave_ext.ReadWriteWav()
+    freq = get_tone_by_key(freq_1_key, freq_1_name)
+    # this prevents clicks
+    length = (1/(freq*2)) * 10
 
     for i in range(int(sample_rate * length)):
         sound.add_sample(get_triangle_wave_tone(i, sample_rate, get_tone_by_key(freq_1_key, freq_1_name)))
