@@ -95,7 +95,7 @@ def get_saw_wave_tone(current_sample, sample_rate, frequency):
 
     current_sample += 1
     tan = math.tan(current_sample*math.pi/(sample_rate/frequency))
-    return -(2.0*MAX_DEPTH/math.pi) * math.atan(12.0/tan) * (MAX_DEPTH)
+    return -(2.0*MAX_DEPTH/math.pi) * math.atan(1.0/tan) * (MAX_DEPTH)
 
 
 def triangle_tone(freq_1_name, freq_1_key, sample_rate, length):
