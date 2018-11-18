@@ -129,8 +129,8 @@ def dual_tone(freq_1_name, freq_1_key, freq_2_name, freq_2_key, sample_rate, len
     sound = wave_ext.ReadWriteWav()
 
     for i in range(int(sample_rate * length)):
-        sound.add_sample(get_sin_wave_tone(i, sample_rate, get_tone_by_key(freq_1_key, freq_1_name)))
-        sound.combine_samples(i, get_sin_wave_tone(i, sample_rate, get_tone_by_key(freq_2_key, freq_2_name)))
+        sound.add_sample(get_triangle_wave_tone(i, sample_rate, get_tone_by_key(freq_1_key, freq_1_name)))
+        sound.combine_samples(i, get_saw_wave_tone(i, sample_rate, get_tone_by_key(freq_2_key, freq_2_name)))
 
     sound.normalize((MAX_DEPTH * 0.9))
     #sound.write_sample_data("audio/two_tones__", channels=1, sample_rate=sample_rate)
@@ -167,7 +167,7 @@ def get_tone_by_key(key, tone_key):
 def generate_tone(tone, freq_name, freq_key, sample_rate=44100, length=1):
 
     if tone == "dual":
-        return dual_tone(freq_name, freq_key, "E", freq_key + 1, sample_rate, length)
+        return dual_tone(freq_name, freq_key, freq_name, freq_key + 3, sample_rate, length)
     elif tone == "saw":
         return saw_tone(freq_name, freq_key, sample_rate, length)
     elif tone == "triangle":
