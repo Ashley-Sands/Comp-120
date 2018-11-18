@@ -108,6 +108,8 @@ class ReadWriteWav:
         for sample_index in range(len(self.sample_data)-1, 0, -1):
             reversed_data.append(self.sample_data[sample_index])
 
+        self.sample_data = reversed_data
+
     @staticmethod
     def abs(value):
         if value < 0:

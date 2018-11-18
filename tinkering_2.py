@@ -328,6 +328,7 @@ while True:
             if event.key == K_f or event.key == K_r or event.key == K_g or event.key == K_t or event.key == K_h or event.key == K_u or event.key == K_j or event.key == K_i \
                     or event.key == K_k or event.key == K_l  or event.key == K_o or event.key == K_SEMICOLON or update_audio_stream:
                 previewSamples = generate_tone(tone_type, frequency_name, frequency_key)
+                #previewSamples.reverse()
                 preview_start = 0
                 preview_max = len(previewSamples.sample_data)
                 previewSamples.encode_samples()
