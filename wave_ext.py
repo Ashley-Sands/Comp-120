@@ -101,6 +101,12 @@ class ReadWriteWav:
             if louder > out_max:
                 out_max = louder
 
+    def reverse(self):
+
+        reversed_data = []
+
+        for sample_index in range(len(self.sample_data)-1, 0, -1):
+            reversed_data.append(self.sample_data[sample_index])
 
     @staticmethod
     def abs(value):
