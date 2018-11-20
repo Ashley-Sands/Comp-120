@@ -13,15 +13,15 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 fps_clock = pygame.time.Clock()
 FPS = 60
 
-FONT = pygame.font.SysFont("arial", 35)
+FONT = pygame.font.SysFont("arial", 15)
 
 # Colors
 LIGHT_GRAY = (180, 180, 180)
 
 MIN_NOTE_SIZE = 50                          # pixels
 MIN_NOTE_LENGTH = 0.1                       # seconds
-note_size = {"width": 50, "height": 25}     # pixels
-audio_length = 1                            # seconds
+note_size = {"width": 150, "height": 25}     # pixels
+audio_length = 1.5                            # seconds
 
 # audio set up
 BASE_FREQUENCIES = {}
@@ -57,21 +57,21 @@ def exit():
 
 def create_piano_role(length):
 
-    surface_height = int(len(BASE_FREQUENCIES) * note_size["height"])
+    surface_height = int(len(BASE_FREQUENCIES) * note_size["height"]) + 2
     note_width_muti = note_size["width"] / MIN_NOTE_SIZE
     print(note_width_muti)
-    surface_width = int((length / (MIN_NOTE_LENGTH * note_width_muti)) * note_size["width"])
+    surface_width = int((length / (MIN_NOTE_LENGTH * note_width_muti)) * note_size["width"]) + 2
 
     surface = pygame.Surface((surface_width, surface_height))
 
     # draw the grid to the surface
-    for col in range(0, surface_width, note_size["width"]):
+    for col in range(0, (surface_width + note_size["width"]), note_size["width"]):
         start_position = col, 0
         end_position = col, surface_height
 
         pygame.draw.line(surface, LIGHT_GRAY, start_position, end_position)
 
-    for row in range(0, surface_width, note_size["height"]):
+    for row in range(0, surface_height, note_size["height"]):
         start_position = 0, row
         end_position = surface_width, row
 
@@ -80,9 +80,30 @@ def create_piano_role(length):
     return surface
 
 
+def get_key_lables():
+
+    surface_height = int(len(BASE_FREQUENCIES) * note_size["height"]) + 2
+    surface_width = 150
+
+    surface = pygame.Surface((surface_width, surface_height))
+    keys = list(BASE_FREQUENCIES)
+
+    for key_index in range(len(keys)):
+
+        text = keys[key_index]
+        text_surface = pygame.Surface((surface_width, note_size["height"]))
+        text_surface.fill((25, 25, 25))
+        text_surface = FONT.render(text, True, (255, 255, 255))
+
+        surface.blit(text_surface, (0, key_index * note_size["height"]) )
+
+    return surface
+
+
 def main():
 
     piano_role_surface = create_piano_role(audio_length)
+    key_lable_surface = get_key_lables()
 
     while True:
 
@@ -96,6 +117,7 @@ def main():
 
         pygame.draw.rect(screen, (25, 25, 25), (0, 150, 1000, 100), 0)
         screen.blit(text_surface, (0, 150))
+        screen.blit(key_lable_surface, (0, 250))
         screen.blit(piano_role_surface, (150, 250))
         pygame.display.flip()
         fps_clock.tick(FPS)
