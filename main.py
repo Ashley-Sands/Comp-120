@@ -70,9 +70,9 @@ def exit():
 def create_piano_role(length):
 
     surface_height = int(len(BASE_FREQUENCIES) * note_size["height"]) + 2
-    note_width_muti = note_size["width"] / MIN_NOTE_SIZE
-    print(note_width_muti)
-    surface_width = int((length / (MIN_NOTE_LENGTH * note_width_muti)) * note_size["width"]) + 2
+    print((length / MIN_NOTE_LENGTH))
+
+    surface_width = int((length / MIN_NOTE_LENGTH) * note_size["width"]) + 2
 
     surface = pygame.Surface((surface_width, surface_height))
 
@@ -91,12 +91,26 @@ def create_piano_role(length):
 
     return surface
 
+def get_piano_role_times(length):
+
+    surface_width = int((length / MIN_NOTE_LENGTH) * note_size["width"])
+    surface = pygame.Surface((surface_width, 20))
+
+    for col in range(0, (surface_width + note_size["width"]), note_size["width"]):
+
+        time_text = str({0:.2}).format(length * (col/(surface_width + note_size["width"])))
+
+        text_surface = FONT.render(time_text, True, (255, 255, 255))
+
+        surface.blit(text_surface, (col, 0) )
+
+    return surface
 
 def get_key_lables():
 
     surface_height = int(len(BASE_FREQUENCIES) * note_size["height"]) + 2
-    surface_width = 150
-
+    surface_width = 50
+    text_x_offset = 15
     surface = pygame.Surface((surface_width, surface_height))
     keys = list(BASE_FREQUENCIES)
 
@@ -105,7 +119,7 @@ def get_key_lables():
         text = keys[key_index]
         text_surface = FONT.render(text, True, (255, 255, 255))
 
-        surface.blit(text_surface, (0, key_index * note_size["height"]) )
+        surface.blit(text_surface, (text_x_offset, key_index * note_size["height"]) )
 
     return surface
 
@@ -113,6 +127,10 @@ def get_key_lables():
 def main():
 
     piano_role_surface = create_piano_role(audio_length)
+    piano_role_times = get_piano_role_times(audio_length)
+    piano_role_hold_surface = pygame.Surface((WINDOW_WIDTH-50, piano_role_surface.get_height() + piano_role_times.get_height()))
+    piano_role_position = (50, 250)
+    piano_role_offset = (0, piano_role_times.get_height())
     key_lable_surface = get_key_lables()
 
     while True:
@@ -125,10 +143,15 @@ def main():
         text_surface.fill((25, 25, 25))
         text_surface = FONT.render(text, True, (255, 255, 255))
 
-        pygame.draw.rect(screen, (25, 25, 25), (0, 150, 1000, 100), 0)
+        pygame.draw.rect(screen, (25, 25, 25), (0, 150, WINDOW_WIDTH, 100), 0)
+
         screen.blit(text_surface, (0, 150))
-        screen.blit(key_lable_surface, (0, 250))
-        screen.blit(piano_role_surface, (150, 250))
+        screen.blit(key_lable_surface, (0, piano_role_position[1] + piano_role_times.get_height() + 2))
+
+        piano_role_hold_surface.blit(piano_role_times, (piano_role_offset[0], 0))
+        piano_role_hold_surface.blit(piano_role_surface, piano_role_offset)
+        screen.blit(piano_role_hold_surface, piano_role_position)
+
         pygame.display.flip()
         fps_clock.tick(FPS)
 
