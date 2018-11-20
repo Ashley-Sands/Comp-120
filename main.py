@@ -123,6 +123,17 @@ def get_key_lables():
 
     return surface
 
+def get_piano_role_cords(mouse_position, piano_role_position, piano_role_offset):
+
+    if mouse_position[0] < piano_role_position[0] or mouse_position[1] < (piano_role_position[1] + piano_role_offset[1]):
+        return
+
+    x_cord = int((mouse_position[0] + piano_role_offset[0] - piano_role_position[0]) / note_size["width"])
+    y_cord = int((mouse_position[1] - piano_role_position[1] - piano_role_offset[1]) / note_size["height"])
+
+    print(x_cord, y_cord)
+
+
 
 def main():
 
@@ -136,6 +147,9 @@ def main():
     while True:
 
         inputs()
+
+        if INPUTS["LMB"]:
+            get_piano_role_cords(pygame.mouse.get_pos(), piano_role_position, piano_role_offset)
 
         #text = "Tone: " + tone_type + " Key: " + frequency_name + str(frequency_key)
         text = "test"
