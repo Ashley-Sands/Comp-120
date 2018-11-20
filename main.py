@@ -20,8 +20,10 @@ LIGHT_GRAY = (180, 180, 180)
 
 MIN_NOTE_SIZE = 50                          # pixels
 MIN_NOTE_LENGTH = 0.1                       # seconds
-note_size = {"width": 150, "height": 25}     # pixels
-audio_length = 1.5                            # seconds
+note_size = {"width": 50, "height": 25}     # pixels
+audio_length = 5                            # seconds
+
+INPUTS = {"LMB": False, "RMB": False}
 
 # audio set up
 BASE_FREQUENCIES = {}
@@ -43,11 +45,21 @@ MAX_DEPTH = 32767
 
 
 def inputs():
+
+    # Reset the mouse inputs as we only want a single click
+    INPUTS["LMB"], INPUTS["RMB"] = False, False
+
+
     for event in pygame.event.get():
         # event: exit game! (via window X or alt-F4)
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+        elif event.type == MOUSEBUTTONDOWN :
+            if event.button == 1:
+                INPUTS["LMB"] = True
+            elif event.button == 3:
+                INPUTS["RMB"] = True
 
 
 def exit():
@@ -91,8 +103,6 @@ def get_key_lables():
     for key_index in range(len(keys)):
 
         text = keys[key_index]
-        text_surface = pygame.Surface((surface_width, note_size["height"]))
-        text_surface.fill((25, 25, 25))
         text_surface = FONT.render(text, True, (255, 255, 255))
 
         surface.blit(text_surface, (0, key_index * note_size["height"]) )
