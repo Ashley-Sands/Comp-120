@@ -11,13 +11,25 @@ class WaveLibrary:
         self.sample_rate = sample_rate
         self.max_depth = max_depth
 
-    def get_sound(self, wave_shape, base_freq, key, harmonic_steps, length, envelope=False):
+    def get_sound(self, wave_shape, base_freq, key, harmonic_steps, length, envelope=None):
 
+        tone_generator = self.get_wave_function(wave_shape)
+        freq = self.get_tone_by_key(base_freq, key)
 
-        audio = self.sine_tone(self.get_tone_by_key(base_freq, key), length)
+        audio = wave_ext.ReadWriteWav()
+
+        if envelope is not None:
+            audio = envelope.apply_adsr_envelop(tone_generator, self.sample_rate, freq, length)
+        else:
+            audio = self.get_wave(tone_generator, freq, length)
 
         for harmonic_step in range(0, harmonic_steps+1):
-            harm_audio = self.sine_tone(self.get_tone_by_key(base_freq, (key+harmonic_step)), length)
+
+            if envelope is not None:
+                harm_audio = envelope.apply_adsr_envelop(tone_generator, self.sample_rate, freq, length)
+            else:
+                harm_audio = self.get_wave(tone_generator, freq, length)
+
             for samp in range(length):
                 audio.combine_samples(samp, harm_audio.sample_data[samp])
 
@@ -36,6 +48,17 @@ class WaveLibrary:
 
         return base_tone
 
+    def get_wave_function(self, wave_name):
+
+        if wave_name == "sine":
+            return self.gen_sine_wave_tone
+        elif wave_name == "triangle":
+            return self.gen_triangle_wave_tone
+        elif wave_name == "saw":
+            return self.gen_saw_wave_tone
+
+        print("Error: wave function not found: ", wave_name)
+
     def gen_sine_wave_tone(self, current_sample, sample_rate, frequency, volume):
         return math.sin(2.0 * math.pi * frequency * (current_sample / float(sample_rate))) * (self.max_depth * volume)
 
@@ -46,18 +69,18 @@ class WaveLibrary:
 
     def gen_saw_wave_tone(self, current_sample, sample_rate, frequency, volume):
 
+        # add one to current sample so we do not divide by 0
+        current_sample += 1
+
         tan = math.tan(current_sample * math.pi / (sample_rate / frequency))
         return -(2.0 * self.max_depth / math.pi) * math.atan(1.0 / tan) * (self.max_depth * volume)
 
-    def sine_tone(self, frequency, length, volume=1):
+    def get_wave(self, wave_funct, frequency, length, velocity=1):
 
         sound = wave_ext.ReadWriteWav()
-        # this prevents clicks
         length = length
 
         for i in range(int(length)):
-            sound.add_sample(self.gen_sine_wave_tone(i, self.sample_rate, frequency, volume))
-
-        #sound.normalize((self.max_depth * (0.9 * volume)))
+            sound.add_sample(wave_funct(i, self.sample_rate, frequency, velocity))
 
         return sound
