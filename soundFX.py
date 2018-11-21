@@ -1,3 +1,4 @@
+import wave_ext
 
 class SoundFxLibrary:
     pass
@@ -20,7 +21,7 @@ class EnvelopeValue:
 class ADSR_envelope:
 
     envelope_data = {}
-    release_time = None
+    release_envelope = None
 
     def __init__(
             self, sample_rate,
@@ -31,6 +32,7 @@ class ADSR_envelope:
     ):
         """
         Todo.
+        :param sample_rate:
         :param attack_length:
         :param attack_start_value:
         :param attack_end_value:
@@ -44,17 +46,17 @@ class ADSR_envelope:
 
         # Set up the envelope
         self.envelope_data = {}
-
         # set the prv end time to 0 as its the start of the envelope
         prv_end_time, prv_end_value = self.set_envelop_value("attack", 0, attack_length, attack_start_value, attack_end_value, sample_rate)
-        prv_end_time, prv_end_value = self.set_envelop_value("sustain", prv_end_time, sustain_length, prv_end_value, sustain_end_value, sample_rate)
         prv_end_time, prv_end_value = self.set_envelop_value("decay", prv_end_time, decay_length, prv_end_value, decay_end_value, sample_rate)
+        prv_end_time, prv_end_value = self.set_envelop_value("sustain", prv_end_time, sustain_length, prv_end_value, sustain_end_value, sample_rate)
 
-        self.release_time = EnvelopeValue(0, release_length*sample_rate, prv_end_value, release_end_value, sample_rate)
+        self.release_envelope = EnvelopeValue(0, release_length*sample_rate, prv_end_value, release_end_value)
 
-    def set_envelop_value(self, value_name, prv_end_time, length, start_value, end_value, samples_rate):
+    def set_envelop_value(self, value_name, prv_end_time, length, start_value, end_value, sample_rate):
         """
 
+        :param sample_rate:         sample rate of the audio file
         :param value_name:          envelope stage name
         :param prv_end_time:        end time of the last stage in samples
         :param length:              length of stage in seconds
@@ -63,21 +65,60 @@ class ADSR_envelope:
         :return:                    (end time, end value)
         """
         start_time = prv_end_time
-        end_time = prv_end_time + int(length * samples_rate)
+        end_time = prv_end_time + int(length * sample_rate)
 
         self.envelope_data[value_name] = EnvelopeValue(start_time, end_time, start_value, end_value)
 
         return end_time, end_value
 
-    def apply_adsr_envelop(self, audio_data, samples):
+    def apply_adsr_envelop(self, wave_funct, sample_rate, frequency, length, velocity=1):
 
         current_stage_index = 0
         stages = list(self.envelope_data)
 
-        # loop the sample indexes because its our measurement of time.
-        for sample_index in range( len(audio_data) ):
+        sound = wave_ext.ReadWriteWav()
+        length = length
+        # store the envelope value so we can continue from the last value when the key is released
+        envelope_value = 0
 
-            if sample_index > stages[current_stage_index].end_time and current_stage_index < len(stages)-1:
+        # main stages of the envelop
+        for sample_index in range(int(length)):
+            if sample_index >= self.envelope_data[stages[current_stage_index]].end_time and current_stage_index < len(stages)-1:
                 current_stage_index += 1
 
-            current_stage = self.envelope_data[ stages[current_stage_index] ]
+            #print(stages[current_stage_index], sample_index - self.envelope_data[stages[current_stage_index]].start_time, "of", (self.envelope_data[stages[current_stage_index]].end_time - self.envelope_data[stages[current_stage_index]].start_time), "||", self.envelope_data[stages[current_stage_index]].end_time, self.envelope_data[stages[current_stage_index]].start_time)
+
+            envelope_stage_position = (sample_index - self.envelope_data[stages[current_stage_index]].start_time) / (self.envelope_data[stages[current_stage_index]].end_time - self.envelope_data[stages[current_stage_index]].start_time)
+
+            envelope_value = ADSR_envelope.lerp(self.envelope_data[stages[current_stage_index]].start_value, self.envelope_data[stages[current_stage_index]].end_value, envelope_stage_position)
+            envelope_value = ADSR_envelope.clamp01(envelope_value)
+
+            sound.add_sample(wave_funct(sample_index, sample_rate, frequency, velocity * envelope_value))
+
+        # release stage of the envelop
+        for release_index in range(int(self.release_envelope.end_time)):
+
+            release_position = release_index / self.release_envelope.end_time
+
+            release_value = ADSR_envelope.lerp(envelope_value, self.release_envelope.end_value, release_position)
+
+            sound.add_sample(wave_funct(sample_index + release_index, sample_rate, frequency, velocity * release_value))
+
+        return sound
+
+    @staticmethod
+    def lerp(start_value, end_value, time):
+
+        value_dif = end_value - start_value
+
+        return start_value + (value_dif * time)
+
+    @staticmethod
+    def clamp01(value):
+
+        if value < 0:
+            return 0
+        elif value > 1:
+            return 1
+
+        return value
