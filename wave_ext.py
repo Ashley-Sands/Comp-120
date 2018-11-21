@@ -86,6 +86,7 @@ class ReadWriteWav:
 
     def normalize(self, max_depth):
 
+        print("normalizing")
         max_samp = 0;
         for samp in self.sample_data:
             if self.abs(samp) > max_samp:
@@ -93,13 +94,10 @@ class ReadWriteWav:
 
         amplification = float(max_depth) / max_samp
 
-        out_max = 0
-
         for i in range(len(self.sample_data)):
             louder = int(self.sample_data[i] * amplification)
             self.sample_data[i] = louder
-            if louder > out_max:
-                out_max = louder
+
 
     def reverse(self):
 
