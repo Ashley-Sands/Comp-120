@@ -20,8 +20,6 @@ class WaveLibrary:
             for samp in length:
                 audio.combine_samples(samp, harm_audio.sample_data[samp])
 
-        audio.normalize(self.max_depth * 0.9)
-
         return audio
 
     @staticmethod
@@ -37,15 +35,15 @@ class WaveLibrary:
     def gen_sine_wave_tone(self, current_sample, sample_rate, frequency, volume):
         return math.sin(2.0 * math.pi * frequency * (current_sample / float(sample_rate))) * (self.max_depth * volume)
 
-    def sine_tone(self, frequency, length):
+    def sine_tone(self, frequency, length, volume=1):
 
         sound = wave_ext.ReadWriteWav()
         # this prevents clicks
         length = length
 
         for i in range(int(length)):
-            sound.add_sample(self.gen_sine_wave_tone(i, self.sample_rate, frequency, 1))
+            sound.add_sample(self.gen_sine_wave_tone(i, self.sample_rate, frequency, volume))
 
-        sound.normalize((self.max_depth * 0.9))
+        #sound.normalize((self.max_depth * (0.9 * volume)))
 
         return sound
