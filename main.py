@@ -53,8 +53,9 @@ synth["sine"] = { "Key": 3, "harmonic_steps": 1}
 synth["saw"] = { "Key": 3, "harmonic_steps": 1}
 synth["triangle"] = { "Key": 3, "harmonic_steps": 1}
 
-timeline = [{"start_sample": 0, "length": SAMPLE_RATE * 4, "base_freq": "F", "key": -1, "harmonic_steps": 0, "wave_shape": "sine"}]
-
+timeline = [{"start_sample": 0, "length": SAMPLE_RATE * 4, "base_freq": "F", "key": 1, "harmonic_steps": 5, "wave_shape": "sine"}]
+timeline.append({"start_sample": SAMPLE_RATE*3, "length": SAMPLE_RATE * 4, "base_freq": "C", "key": 3, "harmonic_steps": 1, "wave_shape": "sine"})
+timeline.append({"start_sample": SAMPLE_RATE*6, "length": SAMPLE_RATE * 4, "base_freq": "F", "key": 1, "harmonic_steps": 5, "wave_shape": "sine"})
 # build audio
 wave_lib = waves.WaveLibrary(SAMPLE_RATE, MAX_DEPTH)
 audio = wave_ext.ReadWriteWav()
