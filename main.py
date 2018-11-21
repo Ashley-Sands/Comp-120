@@ -76,11 +76,48 @@ def inputs():
                 INPUTS["LMB"] = True
             elif event.button == 3:
                 INPUTS["RMB"] = True
+        elif event.type == KEYDOWN:
+            if event.key == K_r:
+                render()
 
 
 def exit():
     pygame.quit()
     sys.exit()
+
+
+def render():
+
+    if audio == None:
+        return
+
+    for i in range(len(timeline)):
+        tone = wave_lib.get_sound(timeline[i]["wave_shape"], BASE_FREQUENCIES[timeline[i]["base_freq"]], timeline[i]["key"], timeline[i]["harmonic_steps"], timeline[i]["length"] )
+        combin_audio(tone, timeline[i]["start_sample"])
+
+    audio.normalize(MAX_DEPTH * 0.9)
+    audio.write_sample_data("audio/main", sample_rate=SAMPLE_RATE)
+
+    print("rendered")
+
+
+def combin_audio(audio_to_combine, start_position):
+
+    if len(audio.sample_data) < start_position:
+        start_index = len(audio.sample_data) - 1
+    else:
+        start_index = start_position
+
+    for i in range(start_index, start_position + len(audio_to_combine.sample_data)):
+        if i >= len(audio.sample_data):
+            if i < start_position:
+                audio.add_sample(0)
+            else:
+                audio.add_sample(audio_to_combine.sample_data[i-start_position])
+        else:
+            audio.combine_samples(i-start_position, audio_to_combine.sample_data[i-start_position])
+
+
 
 
 def create_piano_role(length):
