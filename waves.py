@@ -39,6 +39,16 @@ class WaveLibrary:
     def gen_sine_wave_tone(self, current_sample, sample_rate, frequency, volume):
         return math.sin(2.0 * math.pi * frequency * (current_sample / float(sample_rate))) * (self.max_depth * volume)
 
+    def get_triangle_wave_tone(self, current_sample, sample_rate, frequency, volume):
+
+        return (2.0 * self.max_depth / math.pi) * math.asin(
+            (math.sin(2.0 * math.pi * current_sample / (sample_rate / frequency)))) * (self.max_depth * volume)
+
+    def get_saw_wave_tone(self, current_sample, sample_rate, frequency, volume):
+
+        tan = math.tan(current_sample * math.pi / (sample_rate / frequency))
+        return -(2.0 * self.max_depth / math.pi) * math.atan(1.0 / tan) * (self.max_depth * volume)
+
     def sine_tone(self, frequency, length, volume=1):
 
         sound = wave_ext.ReadWriteWav()
