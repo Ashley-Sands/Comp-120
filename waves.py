@@ -82,7 +82,7 @@ class WaveLibrary:
         sound = wave_ext.ReadWriteWav()
         length = length
 
-        for i in range(int(length)):
-            sound.add_sample(wave_funct(i, self.sample_rate, frequency, velocity))
+        for sample_index in range(int(length)):
+            sound.add_sample(wave_funct(sample_index, self.sample_rate, frequency, velocity))
 
         return sound
