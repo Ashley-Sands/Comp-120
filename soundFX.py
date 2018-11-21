@@ -11,9 +11,9 @@ class EnvelopeValue:
     start_value = 0     # value 0 to 1
     end_value = 0       # value 0 to 1
 
-    def __init__(self, start_time, length, start_value, end_value):
+    def __init__(self, start_time, end_time, start_value, end_value):
         self.start_time = start_time
-        self.end_time = start_time + length
+        self.end_time = end_time
         self.start_value = start_value
         self.end_value = end_value
 
