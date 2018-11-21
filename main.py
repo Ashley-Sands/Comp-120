@@ -53,9 +53,12 @@ synth["sine"] = { "Key": 3, "harmonic_steps": 1}
 synth["saw"] = { "Key": 3, "harmonic_steps": 1}
 synth["triangle"] = { "Key": 3, "harmonic_steps": 1}
 
-timeline = [{"start_sample": 0, "length": SAMPLE_RATE * 4, "base_freq": "F", "key": 1, "harmonic_steps": 5, "wave_shape": "sine"}]
-timeline.append({"start_sample": SAMPLE_RATE*3, "length": SAMPLE_RATE * 4, "base_freq": "C", "key": 3, "harmonic_steps": 1, "wave_shape": "sine"})
-timeline.append({"start_sample": SAMPLE_RATE*6, "length": SAMPLE_RATE * 4, "base_freq": "F", "key": 1, "harmonic_steps": 5, "wave_shape": "sine"})
+adsr_envelope = soundFX.ADSR_envelope(SAMPLE_RATE, 1, 0, 1, 1, 0.75, 1, 0.5, 1, 0)
+
+timeline = [{"start_sample": 0, "length": SAMPLE_RATE * 4, "base_freq": "F", "key": 1, "harmonic_steps": 5, "wave_shape": "triangle", "envelope": adsr_envelope}]
+#timeline.append({"start_sample": SAMPLE_RATE*3, "length": SAMPLE_RATE * 4, "base_freq": "C", "key": 3, "harmonic_steps": 1, "wave_shape": "sine", "envelope": None})
+#timeline.append({"start_sample": SAMPLE_RATE*6, "length": SAMPLE_RATE * 4, "base_freq": "F", "key": 1, "harmonic_steps": 5, "wave_shape": "sine", "envelope": None})
+
 # build audio
 wave_lib = waves.WaveLibrary(SAMPLE_RATE, MAX_DEPTH)
 audio = wave_ext.ReadWriteWav()
@@ -95,7 +98,7 @@ def render():
         return
 
     for i in range(len(timeline)):
-        tone = wave_lib.get_sound(timeline[i]["wave_shape"], BASE_FREQUENCIES[timeline[i]["base_freq"]], timeline[i]["key"], timeline[i]["harmonic_steps"], timeline[i]["length"] )
+        tone = wave_lib.get_sound(timeline[i]["wave_shape"], BASE_FREQUENCIES[timeline[i]["base_freq"]], timeline[i]["key"], timeline[i]["harmonic_steps"], timeline[i]["length"], timeline[i]["envelope"])
         combine_audio(tone, timeline[i]["start_sample"])
 
     audio.normalize(MAX_DEPTH * 0.9)
