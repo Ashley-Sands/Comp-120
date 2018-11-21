@@ -24,12 +24,15 @@ class WaveLibrary:
         return audio
 
     @staticmethod
-    def get_tone_by_key(key, freq):
+    def get_tone_by_key(freq, key):
 
         base_tone = freq
 
-        for i in range(int(key)):
-            base_tone *= 2
+        for i in range(int(abs(key))):
+            if key > 0:
+                base_tone *= 2
+            else:
+                base_tone /= 2
 
         return base_tone
 
