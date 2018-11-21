@@ -13,11 +13,12 @@ class WaveLibrary:
 
     def get_sound(self, wave_shape, base_freq, key, harmonic_steps, length, envelope=False):
 
+
         audio = self.sine_tone(self.get_tone_by_key(base_freq, key), length)
 
-        for harmonic_step in range(1, harmonic_steps):
+        for harmonic_step in range(0, harmonic_steps+1):
             harm_audio = self.sine_tone(self.get_tone_by_key(base_freq, (key+harmonic_step)), length)
-            for samp in length:
+            for samp in range(length):
                 audio.combine_samples(samp, harm_audio.sample_data[samp])
 
         return audio
