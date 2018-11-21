@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 import wave_ext
 import soundFX
-import wave
+import waves
 import sys
 
 WINDOW_HEIGHT = 750
@@ -43,6 +43,22 @@ BASE_FREQUENCIES["B"] = 30.87
 VOLUME = 1.0
 MAX_DEPTH = 32767
 
+SAMPLE_RATE = 44100
+
+# Synths
+# list of dicts
+# todo add env
+synth = {}
+synth["sine"] = { "Key": 3, "harmonic_steps": 1}
+synth["saw"] = { "Key": 3, "harmonic_steps": 1}
+synth["triangle"] = { "Key": 3, "harmonic_steps": 1}
+
+timeline = [{"start_sample": 0, "length": SAMPLE_RATE * 4, "base_freq": "F", "key": -1, "harmonic_steps": 0, "wave_shape": "sine"}]
+
+# build audio
+wave_lib = waves.WaveLibrary(SAMPLE_RATE, MAX_DEPTH)
+audio = wave_ext.ReadWriteWav()
+
 
 def inputs():
 
@@ -55,7 +71,7 @@ def inputs():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-        elif event.type == MOUSEBUTTONDOWN :
+        elif event.type == MOUSEBUTTONDOWN:
             if event.button == 1:
                 INPUTS["LMB"] = True
             elif event.button == 3:
@@ -123,20 +139,26 @@ def get_key_lables():
 
     return surface
 
-def get_piano_role_cords(mouse_position, piano_role_position, piano_role_offset):
+def get_piano_role_cords(mouse_position, piano_role_position, piano_role_offset, piano_role_size):
 
-    if mouse_position[0] < piano_role_position[0] or mouse_position[1] < (piano_role_position[1] + piano_role_offset[1]):
+
+    piano_x_pos = int(piano_role_offset[0] + piano_role_position[0])
+    piano_y_pos = int(piano_role_position[1] + piano_role_offset[1])
+
+    if mouse_position[0] < piano_x_pos or mouse_position[1] < piano_y_pos \
+            or mouse_position[0] > (piano_x_pos + piano_role_size[0]) or mouse_position[1] > (piano_y_pos + piano_role_size[1] - piano_role_offset[1]):
         return
 
     x_cord = int((mouse_position[0] + piano_role_offset[0] - piano_role_position[0]) / note_size["width"])
     y_cord = int((mouse_position[1] - piano_role_position[1] - piano_role_offset[1]) / note_size["height"])
 
-    print(x_cord, y_cord)
+    return x_cord, y_cord
 
 
 
 def main():
 
+    #piano role
     piano_role_surface = create_piano_role(audio_length)
     piano_role_times = get_piano_role_times(audio_length)
     piano_role_hold_surface = pygame.Surface((WINDOW_WIDTH-50, piano_role_surface.get_height() + piano_role_times.get_height()))
@@ -144,12 +166,15 @@ def main():
     piano_role_offset = (0, piano_role_times.get_height())
     key_lable_surface = get_key_lables()
 
+    # synths
+    current_synth = "sine"
+
     while True:
 
         inputs()
 
         if INPUTS["LMB"]:
-            get_piano_role_cords(pygame.mouse.get_pos(), piano_role_position, piano_role_offset)
+            get_piano_role_cords( pygame.mouse.get_pos(), piano_role_position, piano_role_offset, piano_role_hold_surface.get_size() )
 
         #text = "Tone: " + tone_type + " Key: " + frequency_name + str(frequency_key)
         text = "test"
