@@ -25,12 +25,14 @@ class WaveLibrary:
 
         for harmonic_step in range(0, harmonic_steps+1):
 
+            freq = self.get_tone_by_key(base_freq, key+harmonic_step)
+
             if envelope is not None:
                 harm_audio = envelope.apply_adsr_envelop(tone_generator, self.sample_rate, freq, length)
             else:
                 harm_audio = self.get_wave(tone_generator, freq, length)
 
-            for samp in range(length):
+            for samp in range(len(harm_audio.sample_data)):
                 audio.combine_samples(samp, harm_audio.sample_data[samp])
 
         return audio
