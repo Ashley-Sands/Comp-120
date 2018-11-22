@@ -145,8 +145,7 @@ def render():
     print("Render Complete!")
 
 
-def combine_audio(audio_to_combine, start_position):
-
+def combine_audio(audio_to_combine, start_position, volume=1):
 
     start_position = int(start_position)
 
@@ -160,9 +159,9 @@ def combine_audio(audio_to_combine, start_position):
             if i < start_position:
                 audio.add_sample(0)
             else:
-                audio.add_sample(audio_to_combine.sample_data[i-start_position])
+                audio.add_sample(audio_to_combine.sample_data[i-start_position]*volume)
         else:
-            audio.combine_samples(i, audio_to_combine.sample_data[i-start_position])
+            audio.combine_samples(i, audio_to_combine.sample_data[i-start_position]*volume)
 
 
 def create_piano_role(length):
