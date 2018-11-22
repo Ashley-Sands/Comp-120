@@ -53,6 +53,8 @@ synth["sine"] = { "Key": 3, "harmonic_steps": 1}
 synth["saw"] = { "Key": 3, "harmonic_steps": 1}
 synth["triangle"] = { "Key": 3, "harmonic_steps": 1}
 
+effect = soundFX.SoundFxLibrary()
+
 adsr_envelope = soundFX.ADSR_envelope(SAMPLE_RATE, 0.1, 0, 1, .1, 0.75, 0.2, 0.25, .2, 0)
 adsr_saw_envelope = soundFX.ADSR_envelope(SAMPLE_RATE, 0.3, 0, 1, .1, .7, 0.2, 0.1, 0.1, 0)
 adsr_sine_envelope = soundFX.ADSR_envelope(SAMPLE_RATE, 0.3, 0, 1, .1, 1, 0.2, 0.25, 0.2, 0)
@@ -97,7 +99,6 @@ timeline.append({"start_sample": SAMPLE_RATE * 3.65, "length": SAMPLE_RATE * 0.0
 
 # build audio
 wave_lib = waves.WaveLibrary(SAMPLE_RATE, MAX_DEPTH)
-audio = wave_ext.ReadWriteWav()
 
 
 def inputs():
@@ -130,14 +131,17 @@ def render():
 
     print("Rendering...")
 
-    if audio == None:
-        return
+    audio = wave_ext.ReadWriteWav()
 
     for i in range(len(timeline)):
         tone = wave_lib.get_sound(timeline[i]["wave_shape"], BASE_FREQUENCIES[timeline[i]["base_freq"]], timeline[i]["key"], timeline[i]["harmonic_steps"], timeline[i]["length"], timeline[i]["envelope"])
         tone.normalize(MAX_DEPTH * (0.9 * timeline[i]["velocity"]))
-        #tone.write_sample_data("audio/tone", sample_rate=SAMPLE_RATE)
-        combine_audio(audio, tone, timeline[i]["start_sample"])
+
+        # set if the timeline element has any effect to be applied
+        if "echo" in timeline[i]:
+            tone = effect.echo(tone, timeline[i]["echo"][0], timeline[i]["echo"][1], timeline[i]["echo"][2], timeline[i]["echo"][3])
+
+        audio = combine_audio(audio, tone.sample_data, timeline[i]["start_sample"])
 
     audio.normalize(MAX_DEPTH * 0.9)
     audio.write_sample_data("audio/main_1", sample_rate=SAMPLE_RATE)
@@ -145,7 +149,7 @@ def render():
     print("Render Complete!")
 
 
-def combine_audio(audio_stream, audio_to_combine, start_position, volume=1):
+def combine_audio(audio_stream, samples_to_combine, start_position, volume=1):
 
     start_position = int(start_position)
 
@@ -154,14 +158,16 @@ def combine_audio(audio_stream, audio_to_combine, start_position, volume=1):
     else:
         start_index = start_position
 
-    for i in range(start_index, start_position + len(audio_to_combine.sample_data)):
+    for i in range(start_index, start_position + len(samples_to_combine)):
         if i >= len(audio_stream.sample_data)-1:
             if i < start_position:
                 audio_stream.add_sample(0)
             else:
-                audio_stream.add_sample(audio_to_combine.sample_data[i-start_position]*volume)
+                audio_stream.add_sample(samples_to_combine[i - start_position] * volume)
         else:
-            audio_stream.combine_samples(i, audio_to_combine.sample_data[i-start_position]*volume)
+            audio_stream.combine_samples(i, samples_to_combine[i - start_position] * volume)
+
+    return audio_stream
 
 
 def create_piano_role(length):
@@ -278,4 +284,5 @@ def main():
         delta_time = fps_clock.get_time() / 1000
 
 if __name__ == "__main__":
+    effect.combine_audio_funct = combine_audio
     main()
