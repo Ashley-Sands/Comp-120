@@ -137,7 +137,7 @@ def render():
         tone = wave_lib.get_sound(timeline[i]["wave_shape"], BASE_FREQUENCIES[timeline[i]["base_freq"]], timeline[i]["key"], timeline[i]["harmonic_steps"], timeline[i]["length"], timeline[i]["envelope"])
         tone.normalize(MAX_DEPTH * (0.9 * timeline[i]["velocity"]))
         #tone.write_sample_data("audio/tone", sample_rate=SAMPLE_RATE)
-        combine_audio(tone, timeline[i]["start_sample"])
+        combine_audio(audio, tone, timeline[i]["start_sample"])
 
     audio.normalize(MAX_DEPTH * 0.9)
     audio.write_sample_data("audio/main_1", sample_rate=SAMPLE_RATE)
@@ -145,23 +145,23 @@ def render():
     print("Render Complete!")
 
 
-def combine_audio(audio_to_combine, start_position, volume=1):
+def combine_audio(audio_stream, audio_to_combine, start_position, volume=1):
 
     start_position = int(start_position)
 
-    if len(audio.sample_data) < start_position:
-        start_index = len(audio.sample_data)
+    if len(audio_stream.sample_data) < start_position:
+        start_index = len(audio_stream.sample_data)
     else:
         start_index = start_position
 
     for i in range(start_index, start_position + len(audio_to_combine.sample_data)):
-        if i >= len(audio.sample_data)-1:
+        if i >= len(audio_stream.sample_data)-1:
             if i < start_position:
-                audio.add_sample(0)
+                audio_stream.add_sample(0)
             else:
-                audio.add_sample(audio_to_combine.sample_data[i-start_position]*volume)
+                audio_stream.add_sample(audio_to_combine.sample_data[i-start_position]*volume)
         else:
-            audio.combine_samples(i, audio_to_combine.sample_data[i-start_position]*volume)
+            audio_stream.combine_samples(i, audio_to_combine.sample_data[i-start_position]*volume)
 
 
 def create_piano_role(length):
