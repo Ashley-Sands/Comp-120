@@ -99,6 +99,8 @@ def render():
 
     for i in range(len(timeline)):
         tone = wave_lib.get_sound(timeline[i]["wave_shape"], BASE_FREQUENCIES[timeline[i]["base_freq"]], timeline[i]["key"], timeline[i]["harmonic_steps"], timeline[i]["length"], timeline[i]["envelope"])
+        tone.normalize(MAX_DEPTH * (0.9 * timeline[i]["velocity"]))
+        #tone.write_sample_data("audio/tone", sample_rate=SAMPLE_RATE)
         combine_audio(tone, timeline[i]["start_sample"])
 
     audio.normalize(MAX_DEPTH * 0.9)

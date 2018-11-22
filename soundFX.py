@@ -86,8 +86,6 @@ class ADSR_envelope:
             if sample_index >= self.envelope_data[stages[current_stage_index]].end_time and current_stage_index < len(stages)-1:
                 current_stage_index += 1
 
-            #print(stages[current_stage_index], sample_index - self.envelope_data[stages[current_stage_index]].start_time, "of", (self.envelope_data[stages[current_stage_index]].end_time - self.envelope_data[stages[current_stage_index]].start_time), "||", self.envelope_data[stages[current_stage_index]].end_time, self.envelope_data[stages[current_stage_index]].start_time)
-
             envelope_stage_position = (sample_index - self.envelope_data[stages[current_stage_index]].start_time) / (self.envelope_data[stages[current_stage_index]].end_time - self.envelope_data[stages[current_stage_index]].start_time)
 
             envelope_value = ADSR_envelope.lerp(self.envelope_data[stages[current_stage_index]].start_value, self.envelope_data[stages[current_stage_index]].end_value, envelope_stage_position)

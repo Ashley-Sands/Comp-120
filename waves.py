@@ -62,6 +62,7 @@ class WaveLibrary:
         print("Error: wave function not found: ", wave_name)
 
     def gen_sine_wave_tone(self, current_sample, sample_rate, frequency, volume):
+
         return math.sin(2.0 * math.pi * frequency * (current_sample / float(sample_rate))) * (self.max_depth * volume)
 
     def gen_triangle_wave_tone(self, current_sample, sample_rate, frequency, volume):
