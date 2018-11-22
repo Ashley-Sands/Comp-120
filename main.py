@@ -6,7 +6,7 @@ import waves
 import sys
 from audio_track_1 import timeline
 
-WINDOW_HEIGHT = 750
+WINDOW_HEIGHT = 250
 WINDOW_WIDTH = 1334
 
 pygame.init()
@@ -203,25 +203,10 @@ def get_piano_role_cords(mouse_position, piano_role_position, piano_role_offset,
 
 def main():
 
-    #piano role
-    piano_role_surface = create_piano_role(audio_length)
-    piano_role_times = get_piano_role_times(audio_length)
-    piano_role_hold_surface = pygame.Surface((WINDOW_WIDTH-50, piano_role_surface.get_height() + piano_role_times.get_height()))
-    piano_role_position = (50, 250)
-    piano_role_offset = (0, piano_role_times.get_height())
-    key_lable_surface = get_key_lables()
-
-    # synths
-    current_synth = "sine"
-
     while True:
 
         inputs()
 
-        if INPUTS["LMB"]:
-            get_piano_role_cords( pygame.mouse.get_pos(), piano_role_position, piano_role_offset, piano_role_hold_surface.get_size() )
-
-        #text = "Tone: " + tone_type + " Key: " + frequency_name + str(frequency_key)
         text = "test"
         text_surface = pygame.Surface((1000, 150))
         text_surface.fill((25, 25, 25))
@@ -230,11 +215,6 @@ def main():
         pygame.draw.rect(screen, (25, 25, 25), (0, 150, WINDOW_WIDTH, 100), 0)
 
         screen.blit(text_surface, (0, 150))
-        screen.blit(key_lable_surface, (0, piano_role_position[1] + piano_role_times.get_height() + 2))
-
-        piano_role_hold_surface.blit(piano_role_times, (piano_role_offset[0], 0))
-        piano_role_hold_surface.blit(piano_role_surface, piano_role_offset)
-        screen.blit(piano_role_hold_surface, piano_role_position)
 
         pygame.display.flip()
         fps_clock.tick(FPS)
