@@ -127,46 +127,6 @@ def combine_audio(audio_stream, samples_to_combine, start_position, volume=1):
 
     return audio_stream
 
-
-def create_piano_role(length):
-
-    surface_height = int(len(BASE_FREQUENCIES) * note_size["height"]) + 2
-    print((length / MIN_NOTE_LENGTH))
-
-    surface_width = int((length / MIN_NOTE_LENGTH) * note_size["width"]) + 2
-
-    surface = pygame.Surface((surface_width, surface_height))
-
-    # draw the grid to the surface
-    for col in range(0, (surface_width + note_size["width"]), note_size["width"]):
-        start_position = col, 0
-        end_position = col, surface_height
-
-        pygame.draw.line(surface, LIGHT_GRAY, start_position, end_position)
-
-    for row in range(0, surface_height, note_size["height"]):
-        start_position = 0, row
-        end_position = surface_width, row
-
-        pygame.draw.line(surface, LIGHT_GRAY, start_position, end_position)
-
-    return surface
-
-def get_piano_role_times(length):
-
-    surface_width = int((length / MIN_NOTE_LENGTH) * note_size["width"])
-    surface = pygame.Surface((surface_width, 20))
-
-    for col in range(0, (surface_width + note_size["width"]), note_size["width"]):
-
-        time_text = str({0:.2}).format(length * (col/(surface_width + note_size["width"])))
-
-        text_surface = FONT.render(time_text, True, (255, 255, 255))
-
-        surface.blit(text_surface, (col, 0) )
-
-    return surface
-
 def get_key_lables():
 
     surface_height = int(len(BASE_FREQUENCIES) * note_size["height"]) + 2
@@ -183,22 +143,6 @@ def get_key_lables():
         surface.blit(text_surface, (text_x_offset, key_index * note_size["height"]) )
 
     return surface
-
-def get_piano_role_cords(mouse_position, piano_role_position, piano_role_offset, piano_role_size):
-
-
-    piano_x_pos = int(piano_role_offset[0] + piano_role_position[0])
-    piano_y_pos = int(piano_role_position[1] + piano_role_offset[1])
-
-    if mouse_position[0] < piano_x_pos or mouse_position[1] < piano_y_pos \
-            or mouse_position[0] > (piano_x_pos + piano_role_size[0]) or mouse_position[1] > (piano_y_pos + piano_role_size[1] - piano_role_offset[1]):
-        return
-
-    x_cord = int((mouse_position[0] + piano_role_offset[0] - piano_role_position[0]) / note_size["width"])
-    y_cord = int((mouse_position[1] - piano_role_position[1] - piano_role_offset[1]) / note_size["height"])
-
-    return x_cord, y_cord
-
 
 
 def main():
