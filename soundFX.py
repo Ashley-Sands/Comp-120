@@ -1,7 +1,24 @@
 import wave_ext
 
 class SoundFxLibrary:
-    pass
+
+    combine_audio_funct = None
+
+    def __init__(self, combine_audio_funct):
+
+        self.combine_audio_funct = combine_audio_funct
+
+    def echo(self, audio_stream, echo_start_sample, echo_length, delay, volume_multiplier):
+
+        echo_samples = audio_stream.get_sample_range(echo_start_sample, echo_length)
+        current_sample_index = echo_start_sample + delay
+
+        # keep applying the echo until the volume < 0.1
+        # it needs to be above 0 as the volume_multiplier will never reach exactly 0
+        while volume_multiplier > 0.1:
+            self.combine_audio_funct(audio_stream, echo_samples, current_sample_index, volume_multiplier)
+            volume_multiplier *= volume_multiplier
+            current_sample_index += delay
 
 
 class EnvelopeValue:
