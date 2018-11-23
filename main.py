@@ -214,14 +214,7 @@ def main():
 
         inputs()
 
-        text = "test"
-        text_surface = pygame.Surface((1000, 150))
-        text_surface.fill((25, 25, 25))
-        text_surface = FONT.render(text, True, (255, 255, 255))
-
         pygame.draw.rect(screen, (25, 25, 25), (0, 150, WINDOW_WIDTH, 100), 0)
-
-        screen.blit(text_surface, (0, 150))
 
         menu.draw_buttons(screen, pygame.mouse.get_pos(), INPUTS["LMB"])
         menu.is_button_pressed(pygame.mouse.get_pos(), INPUTS["LMB"])
