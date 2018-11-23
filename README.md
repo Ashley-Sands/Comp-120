@@ -32,6 +32,7 @@ Save audio to .Wav file                             -> write_sample_date()
 ```
 Modify frequancy by key                             -> get_tone_by_key()
 Generate sine tone                                  -> gen_sine_wave_tone()
+Generate square tone                                -> gen_square_wave_tone()
 Generate saw tone                                   -> gen_saw_wave_tone()
 Generate triangle tone                              -> gen_triangle_wave_tone()
 ```
