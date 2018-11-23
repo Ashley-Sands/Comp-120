@@ -122,24 +122,6 @@ def combine_audio(audio_stream, samples_to_combine, start_position, volume=1, co
 
     return audio_stream
 
-def get_key_lables():
-
-    surface_height = int(len(BASE_FREQUENCIES) * note_size["height"]) + 2
-    surface_width = 50
-    text_x_offset = 15
-    surface = pygame.Surface((surface_width, surface_height))
-    keys = list(BASE_FREQUENCIES)
-
-    for key_index in range(len(keys)):
-
-        text = keys[key_index]
-        text_surface = FONT.render(text, True, (255, 255, 255))
-
-        surface.blit(text_surface, (text_x_offset, key_index * note_size["height"]) )
-
-    return surface
-
-
 def draw_wave_to_screen(width, height, audio_wave, max_vol):
 
     surface = pygame.Surface((width, height))
