@@ -92,22 +92,27 @@ def render():
     audio = wave_ext.ReadWriteWav()
 
     for i in range(len(timeline)):
+
+        print("generating timeline", i)
         tone = wave_lib.get_sound(timeline[i]["wave_shape"], BASE_FREQUENCIES[timeline[i]["base_freq"]], timeline[i]["key"], timeline[i]["harmonic_steps"], timeline[i]["length"], timeline[i]["envelope"])
         tone.normalize(MAX_DEPTH * (0.9 * timeline[i]["velocity"]))
 
         # set if the timeline element has any effect to be applied
         if "echo" in timeline[i]:
             tone = effect.echo(tone, timeline[i]["echo"][0], timeline[i]["echo"][1], timeline[i]["echo"][2], timeline[i]["echo"][3])
+        audio = combine_audio(audio, tone.sample_data, timeline[i]["start_sample"], combine_mode=timeline[i]["combine"])
 
-        audio = combine_audio(audio, tone.sample_data, timeline[i]["start_sample"])
-
+    print("normalizing")
     audio.normalize(MAX_DEPTH * 0.9)
     audio.write_sample_data("audio/main_1", sample_rate=SAMPLE_RATE)
+
+    print("generating wave image")
+    draw_wave_to_screen(1334, 150, audio.sample_data, MAX_DEPTH)
 
     print("Render Complete!")
 
 
-def combine_audio(audio_stream, samples_to_combine, start_position, volume=1):
+def combine_audio(audio_stream, samples_to_combine, start_position, volume=1, combine_mode=wave_ext.ReadWriteWav.COMBINE_ADD):
 
     start_position = int(start_position)
 
@@ -121,9 +126,9 @@ def combine_audio(audio_stream, samples_to_combine, start_position, volume=1):
             if i < start_position:
                 audio_stream.add_sample(0)
             else:
-                audio_stream.add_sample(samples_to_combine[i - start_position] * volume)
+                audio_stream.add_sample(samples_to_combine[i - start_position] * (volume*combine_mode))
         else:
-            audio_stream.combine_samples(i, samples_to_combine[i - start_position] * volume)
+            audio_stream.combine_samples(i, samples_to_combine[i - start_position] * volume, combine_mode)
 
     return audio_stream
 
@@ -145,7 +150,45 @@ def get_key_lables():
     return surface
 
 
+def draw_wave_to_screen(width, height, audio_wave, max_vol):
+
+    surface = pygame.Surface((width, height))
+    total_samples = len(audio_wave)
+    samples_to_pixels = total_samples // width
+
+    if samples_to_pixels < 1:
+        samples_to_pixels = 1
+
+    pixel_array = pygame.PixelArray(surface)
+
+    x = 0
+
+    for samp_numb in range(0, total_samples, samples_to_pixels):
+
+        samp_value = audio_wave[samp_numb] + max_vol
+        precent = samp_value / (max_vol*2)
+
+        y = int( (1 - precent) * height)
+
+        pixel_color = (255 * precent, 0, 255 * (1-precent))
+
+        pixel_array[x, height // 2] = (100, 100, 100)
+        pygame.draw.line(surface, pixel_color, (x, height // 2), (x, y))
+        # pixel_array[x, y] = pixel_color
+
+        x += 1
+        if x > width-1:
+            break
+
+    del pixel_array
+
+    screen.blit(surface, (0, 0))
+    pygame.display.flip()
+
+
 def main():
+
+    current_audio_track = ""
 
     while True:
 

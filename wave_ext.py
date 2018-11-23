@@ -11,6 +11,9 @@ class ReadWriteWav:
     sample_data = []
     encoded_data = []
 
+    COMBINE_ADD = 1
+    COMBINE_SUB = -1
+
     def __init__(self, read_filename=None):
         """Initialize readWriteWav
         :param read_filename: if none creates an empty array to stream to.
@@ -80,13 +83,15 @@ class ReadWriteWav:
         if encode:
             self.encode_sample(sample_numb)
 
-    def combine_samples(self, sample_numb, value):
+    def combine_samples(self, sample_numb, value, combine_mode=COMBINE_ADD):
 
-        self.sample_data[sample_numb] += value
+        if combine_mode == self.COMBINE_ADD:
+            self.sample_data[sample_numb] += value
+        else:
+            self.sample_data[sample_numb] -= value
 
     def normalize(self, max_depth):
 
-        print("normalizing")
         max_samp = 0;
         for samp in self.sample_data:
             if self.abs(samp) > max_samp:
