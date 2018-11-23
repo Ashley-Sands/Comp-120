@@ -11,8 +11,9 @@ class ReadWriteWav:
     sample_data = []
     encoded_data = []
 
-    COMBINE_ADD = 1
-    COMBINE_SUB = -1
+    # Combine modes
+    COMBINE_ADD = 1     # Additive
+    COMBINE_SUB = -1    # Subtractive
 
     def __init__(self, read_filename=None):
         """Initialize readWriteWav
@@ -61,37 +62,48 @@ class ReadWriteWav:
 
     @staticmethod
     def sample_value_to_byte(sample_value):
+        """Converts sample value to byte"""
         return struct.pack('h', int(sample_value))
 
     def get_sample_at_position(self, position):
+        """Get a sample at position in sample data
 
+        :param position:    sample position
+        """
         return self.sample_data[position]
 
     def get_sample_range(self, start_position, length):
+        """Gets a range of samples from sample data
 
+        :param start_position:    start sample position
+        :param length:            length in sampls
+        """
         return self.sample_data[start_position:(start_position+length)]
 
     def add_sample(self, value, encode=False):
-
+        """Add a sample to the end of sample data"""
         self.sample_data.append(value)
         if encode:
             self.encode_sample(len(self.sample_data)-1, True)
 
-    def set_sample(self, sample_numb, value, encode=False):
-
-        self.sample_data[sample_numb] = value
+    def set_sample(self, sample_index, value, encode=False):
+        """ set sample at sample_index in sample data"""
+        self.sample_data[sample_index] = value
         if encode:
-            self.encode_sample(sample_numb)
+            self.encode_sample(sample_index)
 
-    def combine_samples(self, sample_numb, value, combine_mode=COMBINE_ADD):
+    def combine_samples(self, sample_index, value, combine_mode=COMBINE_ADD):
+        """ combine sample at sample_index with value
 
+        :param combine_mode:  Combine mode either COMBINE_ADD (additive) or COMBINE_SUB (subtractive) (default: Additive)
+        """
         if combine_mode == self.COMBINE_ADD:
-            self.sample_data[sample_numb] += value
+            self.sample_data[sample_index] += value
         else:
-            self.sample_data[sample_numb] -= value
+            self.sample_data[sample_index] -= value
 
     def normalize(self, max_depth):
-
+        """Normalize sample_data to max_depth"""
         max_samp = 0;
         for samp in self.sample_data:
             if self.abs(samp) > max_samp:
@@ -109,7 +121,7 @@ class ReadWriteWav:
 
 
     def reverse(self):
-
+        """reverse sample_data"""
         reversed_data = []
 
         for sample_index in range(len(self.sample_data)-1, 0, -1):
@@ -125,7 +137,7 @@ class ReadWriteWav:
         return value
 
     def encode_sample(self, sample_id, add_sample=False):
-
+        """encode a single sample from sample data into encoded data at sample_id"""
         encoded_sample = ReadWriteWav.sample_value_to_byte(self.sample_data[sample_id])
 
         if add_sample:
@@ -134,7 +146,7 @@ class ReadWriteWav:
             self.encoded_data[sample_id] = encoded_sample
 
     def encode_samples(self):
-
+        """encode all sample data into encoded data"""
         byte_data = []
 
         # convert sample data into bytes
@@ -169,6 +181,7 @@ class ReadWriteWav:
         if encode:
             self.encode_samples()
 
+        # join encode data and save file
         byte_str = b''.join(self.encoded_data)
         write_file.writeframesraw(byte_str)
 
