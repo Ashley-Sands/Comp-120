@@ -49,14 +49,6 @@ SAMPLE_RATE = 44100
 
 timeline = timeline_0
 
-# Synths
-# list of dicts
-# todo add env
-synth = {}
-synth["sine"] = { "Key": 3, "harmonic_steps": 1}
-synth["saw"] = { "Key": 3, "harmonic_steps": 1}
-synth["triangle"] = { "Key": 3, "harmonic_steps": 1}
-
 effect = soundFX.SoundFxLibrary()
 
 # build audio
