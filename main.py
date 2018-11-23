@@ -7,6 +7,8 @@ import sys
 import menuUi
 from audioFiles import audio_track_0 as timeline_0
 from audioFiles import audio_track_1 as timeline_1
+from audioFiles import audio_track_2 as timeline_2
+from audioFiles import audio_track_3 as timeline_3
 
 WINDOW_HEIGHT = 250
 WINDOW_WIDTH = 1334
@@ -43,8 +45,8 @@ MAX_DEPTH = 32767
 
 SAMPLE_RATE = 44100
 
-timelines = [timeline_0, timeline_1]
-timeline_file_names = [None, None]  # Gets added once generated
+timelines = [timeline_0, timeline_1, timeline_2, timeline_3]
+timeline_file_names = [None, None, None, None]  # Gets added once generated
 timeline = timeline_0.timeline
 current_timeline_id = 0
 
@@ -182,6 +184,12 @@ def set_timeline_0():
 def set_timeline_1():
     change_timeline(1)
 
+def set_timeline_2():
+    change_timeline(2)
+
+def set_timeline_3():
+    change_timeline(3)
+
 def play_audio():
     if timeline_file_names[current_timeline_id] is None:
         return
@@ -191,10 +199,11 @@ def setup_menu():
     menu.add_button_type("normal", None, None, None, (150, 50))
     menu.add_menu("Audio")
     menu.current_menu = "Audio"
-    menu.add_button("Audio", "normal", "Audio 1", (435, 200), set_timeline_0)
-    menu.add_button("Audio", "normal", "Audio 2", (590, 200), set_timeline_1)
-    menu.add_button("Audio", "normal", "Audio 3", (745, 200), set_timeline_1)
-    menu.add_button("Audio", "normal", "Play", (1000, 170), play_audio)
+    menu.add_button("Audio", "normal", "Audio 1", (355, 200), set_timeline_0)
+    menu.add_button("Audio", "normal", "Audio 2", (515, 200), set_timeline_1)
+    menu.add_button("Audio", "normal", "Audio 3", (675, 200), set_timeline_2)
+    menu.add_button("Audio", "normal", "Audio 3", (835, 200), set_timeline_3)
+    menu.add_button("Audio", "normal", "Play", (1150, 185), play_audio)
 
 def main():
 
