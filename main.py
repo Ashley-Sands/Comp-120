@@ -44,7 +44,9 @@ MAX_DEPTH = 32767
 SAMPLE_RATE = 44100
 
 timelines = [timeline_0, timeline_1]
+timeline_file_names = [None, None]  # Gets added once generated
 timeline = timeline_0.timeline
+current_timeline_id = 0
 
 effect = soundFX.SoundFxLibrary()
 
@@ -57,7 +59,6 @@ def inputs():
 
     # Reset the mouse inputs as we only want a single click
     INPUTS["LMB"], INPUTS["RMB"] = False, False
-
 
     for event in pygame.event.get():
         # event: exit game! (via window X or alt-F4)
@@ -98,7 +99,11 @@ def render():
 
     print("normalizing")
     audio.normalize(MAX_DEPTH * 0.9)
-    audio.write_sample_data("audio/main_1", sample_rate=SAMPLE_RATE)
+
+    file_path = "audio/"+timelines[current_timeline_id].TRACK_NAME
+    audio.write_sample_data(file_path, sample_rate=SAMPLE_RATE)
+    timeline_file_names[current_timeline_id] = file_path
+
 
     print("generating wave image")
     draw_wave_to_screen(1334, 150, audio.sample_data, MAX_DEPTH)
@@ -160,15 +165,41 @@ def draw_wave_to_screen(width, height, audio_wave, max_vol):
     screen.blit(surface, (0, 0))
     pygame.display.flip()
 
+
+
 def change_timeline(timeline_id):
 
-    global timeline
-    timeline = timeline[timeline_id].timeline
+    global timeline, current_timeline_id
 
+    current_timeline_id = timeline_id
+    timeline = timelines[timeline_id].timeline
+    render()
+
+
+def set_timeline_0():
+    change_timeline(0)
+
+def set_timeline_1():
+    change_timeline(1)
+
+def play_audio():
+    if timeline_file_names[current_timeline_id] is None:
+        return
+    pygame.mixer.Sound(timeline_file_names[current_timeline_id]+".wav").play()
+
+def setup_menu():
+    menu.add_button_type("normal", None, None, None, (150, 50))
+    menu.add_menu("Audio")
+    menu.current_menu = "Audio"
+    menu.add_button("Audio", "normal", "Audio 1", (435, 200), set_timeline_0)
+    menu.add_button("Audio", "normal", "Audio 2", (590, 200), set_timeline_1)
+    menu.add_button("Audio", "normal", "Audio 3", (745, 200), set_timeline_1)
+    menu.add_button("Audio", "normal", "Play", (1000, 170), play_audio)
 
 def main():
 
-    current_timeline_id = 0
+    setup_menu()
+
 
     while True:
 
@@ -182,6 +213,9 @@ def main():
         pygame.draw.rect(screen, (25, 25, 25), (0, 150, WINDOW_WIDTH, 100), 0)
 
         screen.blit(text_surface, (0, 150))
+
+        menu.draw_buttons(screen, pygame.mouse.get_pos(), INPUTS["LMB"])
+        menu.is_button_pressed(pygame.mouse.get_pos(), INPUTS["LMB"])
 
         pygame.display.flip()
         fps_clock.tick(FPS)

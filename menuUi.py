@@ -15,12 +15,12 @@ class UiMenu:
     menus = {}
     buttons = {}
 
-    HEADER_Y_POSITION = 75
-    HEADER_SIZE = (500, 100)
+    HEADER_Y_POSITION = 150
+    HEADER_SIZE = (200, 50)
 
     def __init__(self):
-        self.header_fontface = pygame.font.SysFont("arial", 100)
-        self.button_fontface = pygame.font.SysFont("arial", 50)
+        self.header_fontface = pygame.font.SysFont("arial", 50)
+        self.button_fontface = pygame.font.SysFont("arial", 30)
         self.menus = {}
         self.buttons = {}
 
