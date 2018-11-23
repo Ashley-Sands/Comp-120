@@ -97,6 +97,10 @@ class ReadWriteWav:
             if self.abs(samp) > max_samp:
                 max_samp = self.abs(samp)
 
+        # return if max sample is 0, there is nothing to normalize
+        if max_samp == 0:
+            return
+
         amplification = float(max_depth) / max_samp
 
         for i in range(len(self.sample_data)):
