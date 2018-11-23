@@ -39,8 +39,8 @@ class EnvelopeValue:
         self.end_value = end_value
 
 
-class ADSR_envelope:
-
+class ADSR_Envelope:
+    """ADSR Envelope"""
     envelope_data = {}
     release_envelope = None
 

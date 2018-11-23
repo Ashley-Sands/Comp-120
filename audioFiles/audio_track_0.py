@@ -14,11 +14,11 @@ COMBINE_SUB = wave_ext.ReadWriteWav.COMBINE_SUB
 
 SAMPLE_RATE = 44100
 
-adsr_long_envelope = soundFX.ADSR_envelope(SAMPLE_RATE, 0.2, 0, 1, .5, 0.75, 1, 0.5, .2, 0)
-adsr_envelope = soundFX.ADSR_envelope(SAMPLE_RATE, 0.1, 0, 1, .1, 0.75, 0.2, 0.25, .2, 0)
-adsr_saw_envelope = soundFX.ADSR_envelope(SAMPLE_RATE, 0.3, 0, 1, .1, .7, 0.2, 0.1, 0.1, 0)
-adsr_sine_envelope = soundFX.ADSR_envelope(SAMPLE_RATE, 0.3, 0, 1, .1, 1, 0.2, 0.25, 0.2, 0)
-adsr_bass_envelope = soundFX.ADSR_envelope(SAMPLE_RATE, 0.1, 0, 1, 0.25, 0.75, 1, 0.5, 0.1, 0)
+adsr_long_envelope = soundFX.ADSR_Envelope(SAMPLE_RATE, 0.2, 0, 1, .5, 0.75, 1, 0.5, .2, 0)
+adsr_envelope = soundFX.ADSR_Envelope(SAMPLE_RATE, 0.1, 0, 1, .1, 0.75, 0.2, 0.25, .2, 0)
+adsr_saw_envelope = soundFX.ADSR_Envelope(SAMPLE_RATE, 0.3, 0, 1, .1, .7, 0.2, 0.1, 0.1, 0)
+adsr_sine_envelope = soundFX.ADSR_Envelope(SAMPLE_RATE, 0.3, 0, 1, .1, 1, 0.2, 0.25, 0.2, 0)
+adsr_bass_envelope = soundFX.ADSR_Envelope(SAMPLE_RATE, 0.1, 0, 1, 0.25, 0.75, 1, 0.5, 0.1, 0)
 
 timeline = []
 timeline.append({"start_sample": 0, "length": SAMPLE_RATE * 1, "base_freq": "D", "key": 2, "harmonic_steps": 1, "wave_shape": "triangle", "envelope": adsr_envelope, "velocity": .7, "combine": COMBINE_ADD, "echo": (0, SAMPLE_RATE * .5, SAMPLE_RATE * 0.15, 0.99999)})
