@@ -4,10 +4,10 @@ import wave_ext
 """
 Audio Track 0
 Author:         Ashley Sands
-Track Name:     Critical Creepy 0
+Track Name:     Critical Creepy 3
 """
 
-TRACK_NAME = "critical_creepy_0"
+TRACK_NAME = "critical_creepy_3"
 
 COMBINE_ADD = wave_ext.ReadWriteWav.COMBINE_ADD
 COMBINE_SUB = wave_ext.ReadWriteWav.COMBINE_SUB
