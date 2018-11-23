@@ -1,3 +1,7 @@
+"""
+Drive: Ashley Sands
+Navigator: None
+"""
 import pygame
 from pygame.locals import *
 import wave_ext
