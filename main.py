@@ -51,6 +51,8 @@ effect = soundFX.SoundFxLibrary()
 # build audio
 wave_lib = waves.WaveLibrary(SAMPLE_RATE, MAX_DEPTH)
 
+menu = menuUi.UiMenu()
+
 def inputs():
 
     # Reset the mouse inputs as we only want a single click
@@ -148,7 +150,6 @@ def draw_wave_to_screen(width, height, audio_wave, max_vol):
 
         pixel_array[x, height // 2] = (100, 100, 100)
         pygame.draw.line(surface, pixel_color, (x, height // 2), (x, y))
-        # pixel_array[x, y] = pixel_color
 
         x += 1
         if x > width-1:
@@ -159,10 +160,15 @@ def draw_wave_to_screen(width, height, audio_wave, max_vol):
     screen.blit(surface, (0, 0))
     pygame.display.flip()
 
+def change_timeline(timeline_id):
+
+    global timeline
+    timeline = timeline[timeline_id].timeline
+
 
 def main():
 
-    current_audio_track = ""
+    current_timeline_id = 0
 
     while True:
 
