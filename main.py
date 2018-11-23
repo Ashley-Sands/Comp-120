@@ -20,11 +20,6 @@ FONT = pygame.font.SysFont("arial", 15)
 # Colors
 LIGHT_GRAY = (180, 180, 180)
 
-MIN_NOTE_SIZE = 50                          # pixels
-MIN_NOTE_LENGTH = 0.1                       # seconds
-note_size = {"width": 50, "height": 25}     # pixels
-audio_length = 5                            # seconds
-
 INPUTS = {"LMB": False, "RMB": False}
 
 # audio set up
