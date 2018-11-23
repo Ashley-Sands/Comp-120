@@ -54,6 +54,8 @@ class WaveLibrary:
 
         if wave_name == "sine":
             return self.gen_sine_wave_tone
+        elif wave_name == "square":
+            return self.gen_square_wave_tone
         elif wave_name == "triangle":
             return self.gen_triangle_wave_tone
         elif wave_name == "saw":
@@ -64,6 +66,23 @@ class WaveLibrary:
     def gen_sine_wave_tone(self, current_sample, sample_rate, frequency, volume):
 
         return math.sin(2.0 * math.pi * frequency * (current_sample / float(sample_rate))) * (self.max_depth * volume)
+
+    def gen_square_wave_tone(self, current_sample, sample_rate, frequency, volume):
+        """Generate square wave tone
+
+        :param current_sample:      current sample to generate
+        :param sample_rate:         sample rate of tone
+        :param frequency:           frequency of wave
+        :param volume:              volume of tone
+        :return:                    generated sample of wave
+        """
+
+        sample = self.gen_sine_wave_tone(current_sample, sample_rate, frequency, volume)
+
+        if sample > 0:
+            return volume
+        else:
+            return -volume
 
     def gen_triangle_wave_tone(self, current_sample, sample_rate, frequency, volume):
 
