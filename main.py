@@ -4,7 +4,8 @@ import wave_ext
 import soundFX
 import waves
 import sys
-from audio_track_1 import timeline
+from audio_track_0 import timeline as timeline_0
+from audio_track_1 import timeline as timeline_1
 
 WINDOW_HEIGHT = 250
 WINDOW_WIDTH = 1334
@@ -45,6 +46,8 @@ VOLUME = 1.0
 MAX_DEPTH = 32767
 
 SAMPLE_RATE = 44100
+
+timeline = timeline_0
 
 # Synths
 # list of dicts
