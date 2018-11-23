@@ -1,7 +1,7 @@
 import wave
 import struct
 
-# Todo Add insert
+
 class ReadWriteWav:
     """
     Opens a wav file to be edited.
@@ -39,7 +39,9 @@ class ReadWriteWav:
         # for the length of max length.
         for i in range(total_samples):
                 sample_byte = read_file.readframes(1)
-                self.sample_data.append(ReadWriteWav.sample_byte_to_value(sample_byte))
+                self.sample_data.append(
+                    ReadWriteWav.sample_byte_to_value(sample_byte)
+                )
 
         read_file.close()
 
@@ -95,7 +97,8 @@ class ReadWriteWav:
     def combine_samples(self, sample_index, value, combine_mode=COMBINE_ADD):
         """ combine sample at sample_index with value
 
-        :param combine_mode:  Combine mode either COMBINE_ADD (additive) or COMBINE_SUB (subtractive) (default: Additive)
+        :param combine_mode:  Combine mode either COMBINE_ADD
+        (additive) or COMBINE_SUB (subtractive) (default: Additive)
         """
         if combine_mode == self.COMBINE_ADD:
             self.sample_data[sample_index] += value
@@ -104,7 +107,7 @@ class ReadWriteWav:
 
     def normalize(self, max_depth):
         """Normalize sample_data to max_depth"""
-        max_samp = 0;
+        max_samp = 0
         for samp in self.sample_data:
             if self.abs(samp) > max_samp:
                 max_samp = self.abs(samp)
@@ -118,7 +121,6 @@ class ReadWriteWav:
         for i in range(len(self.sample_data)):
             louder = int(self.sample_data[i] * amplification)
             self.sample_data[i] = louder
-
 
     def reverse(self):
         """reverse sample_data"""
@@ -137,8 +139,10 @@ class ReadWriteWav:
         return value
 
     def encode_sample(self, sample_id, add_sample=False):
-        """encode a single sample from sample data into encoded data at sample_id"""
-        encoded_sample = ReadWriteWav.sample_value_to_byte(self.sample_data[sample_id])
+        """encode a sample from sample data into encoded data at sample_id"""
+        encoded_sample = ReadWriteWav.sample_value_to_byte(
+            self.sample_data[sample_id]
+        )
 
         if add_sample:
             self.encoded_data.append(encoded_sample)
@@ -155,7 +159,12 @@ class ReadWriteWav:
 
         self.encoded_data = byte_data
 
-    def write_sample_data(self, filename, encode=True, channels=1, sample_rate=44100):
+    def write_sample_data(self,
+                          filename,
+                          encode=True,
+                          channels=1,
+                          sample_rate=44100
+                          ):
         """Write sample data to to wave file.
 
         :param filename:        file name for wav file
@@ -170,13 +179,6 @@ class ReadWriteWav:
             (channels, 2, sample_rate,
              len(self.sample_data), "NONE", "not compressed")
         )
-        '''
-                byte_data = []
-        
-                # convert sample data into bytes
-                for sample in self.sample_data:
-                    byte_data.append(ReadWriteWav.sample_value_to_byte(sample))
-        '''
 
         if encode:
             self.encode_samples()

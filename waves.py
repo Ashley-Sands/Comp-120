@@ -1,6 +1,7 @@
 import wave_ext
 import math
 
+
 class WaveLibrary:
     """Generate wave tones"""
     sample_rate = 44100
@@ -11,12 +12,21 @@ class WaveLibrary:
         self.sample_rate = sample_rate
         self.max_depth = max_depth
 
-    def get_sound(self, wave_shape, base_freq, key, harmonic_steps, length, envelope=None):
+    def get_sound(self,
+                  wave_shape,
+                  base_freq,
+                  key,
+                  harmonic_steps,
+                  length,
+                  envelope=None
+                  ):
         """
 
-        :param wave_shape:      Shape of wave to generate either: sine, saw or triangle
+        :param wave_shape:      Shape of wave to generate either:
+        sine, saw or triangle
         :param base_freq:       base frequency of tone
-        :param key:             key of frequency; 0 = no change, >0 = higher freq, <0 lower freq
+        :param key:             key of frequency;
+        0 = no change, >0 = higher freq, <0 lower freq
         :param harmonic_steps:  amount of harmonics in tone
         :param length:          length of tone in sampes
         :param envelope:        ADSR envelope function
@@ -30,7 +40,11 @@ class WaveLibrary:
         audio = wave_ext.ReadWriteWav()
 
         if envelope is not None:
-            audio = envelope.apply_adsr_envelop(tone_generator, self.sample_rate, freq, length)
+            audio = envelope.apply_adsr_envelop(tone_generator,
+                                                self.sample_rate,
+                                                freq,
+                                                length
+                                                )
         else:
             audio = self.get_wave(tone_generator, freq, length)
 
@@ -40,7 +54,11 @@ class WaveLibrary:
             freq = self.get_tone_by_key(base_freq, key+harmonic_step)
 
             if envelope is not None:
-                harm_audio = envelope.apply_adsr_envelop(tone_generator, self.sample_rate, freq, length)
+                harm_audio = envelope.apply_adsr_envelop(tone_generator,
+                                                         self.sample_rate,
+                                                         freq,
+                                                         length
+                                                         )
             else:
                 harm_audio = self.get_wave(tone_generator, freq, length)
 
@@ -82,7 +100,12 @@ class WaveLibrary:
 
         print("Error: wave function not found: ", wave_name)
 
-    def gen_sine_wave_tone(self, current_sample, sample_rate, frequency, volume):
+    def gen_sine_wave_tone(self,
+                           current_sample,
+                           sample_rate,
+                           frequency,
+                           volume
+                           ):
         """Generate sine wave tone
 
         :param current_sample:      current sample to generate
@@ -91,9 +114,18 @@ class WaveLibrary:
         :param volume:              volume of tone
         :return:                    generated sample of wave
         """
-        return math.sin(2.0 * math.pi * frequency * (current_sample / float(sample_rate))) * (self.max_depth * volume)
+        return math.sin(2.0 *
+                        math.pi *
+                        frequency *
+                        (current_sample / float(sample_rate))
+                        ) * (self.max_depth * volume)
 
-    def gen_square_wave_tone(self, current_sample, sample_rate, frequency, volume):
+    def gen_square_wave_tone(self,
+                             current_sample,
+                             sample_rate,
+                             frequency,
+                             volume
+                             ):
         """Generate square wave tone
 
         :param current_sample:      current sample to generate
@@ -103,14 +135,23 @@ class WaveLibrary:
         :return:                    generated sample of wave
         """
 
-        sample = self.gen_sine_wave_tone(current_sample, sample_rate, frequency, volume)
+        sample = self.gen_sine_wave_tone(current_sample,
+                                         sample_rate,
+                                         frequency,
+                                         volume
+                                         )
 
         if sample >= 0.1:
             return volume
         else:
             return -volume
 
-    def gen_triangle_wave_tone(self, current_sample, sample_rate, frequency, volume):
+    def gen_triangle_wave_tone(self,
+                               current_sample,
+                               sample_rate,
+                               frequency,
+                               volume
+                               ):
         """Generate triangle wave tone
 
         :param current_sample:      current sample to generate
@@ -119,10 +160,23 @@ class WaveLibrary:
         :param volume:              volume of tone
         :return:                    generated sample of wave
         """
-        return (2.0 * self.max_depth / math.pi) * math.asin(
-            (math.sin(2.0 * math.pi * current_sample / (sample_rate / frequency)))) * (self.max_depth * volume)
+        return (
+                (2.0 * self.max_depth / math.pi) *
+                math.asin(
+                    (math.sin(2.0 *
+                              math.pi *
+                              current_sample /
+                              (sample_rate / frequency)
+                              )
+                     )
+                ) * (self.max_depth * volume))
 
-    def gen_saw_wave_tone(self, current_sample, sample_rate, frequency, volume):
+    def gen_saw_wave_tone(self,
+                          current_sample,
+                          sample_rate,
+                          frequency,
+                          volume
+                          ):
         """Generate saw wave tone
 
         :param current_sample:      current sample to generate
@@ -135,7 +189,11 @@ class WaveLibrary:
         current_sample += 1
 
         tan = math.tan(current_sample * math.pi / (sample_rate / frequency))
-        return -(2.0 * self.max_depth / math.pi) * math.atan(1.0 / tan) * (self.max_depth * volume)
+        return (
+                -(2.0 * self.max_depth / math.pi) *
+                math.atan(1.0 / tan) *
+                (self.max_depth * volume)
+        )
 
     def get_wave(self, wave_funct, frequency, length, velocity=1):
         """ generates wave of length
@@ -150,6 +208,10 @@ class WaveLibrary:
         length = length
 
         for sample_index in range(int(length)):
-            sound.add_sample(wave_funct(sample_index, self.sample_rate, frequency, velocity))
+            sound.add_sample(wave_funct(sample_index,
+                                        self.sample_rate,
+                                        frequency,
+                                        velocity)
+                             )
 
         return sound

@@ -60,6 +60,7 @@ wave_lib = waves.WaveLibrary(SAMPLE_RATE, MAX_DEPTH)
 # ui
 menu = menuUi.UiMenu()
 
+
 def inputs():
     """Get user inputs"""
     # Reset the mouse inputs as we only want a single click
@@ -99,13 +100,30 @@ def render():
 
         print("generating timeline", i)
         # generate a tone and normalize
-        tone = wave_lib.get_sound(timeline[i]["wave_shape"], BASE_FREQUENCIES[timeline[i]["base_freq"]], timeline[i]["key"], timeline[i]["harmonic_steps"], timeline[i]["length"], timeline[i]["envelope"])
+        tone = wave_lib.get_sound(
+            timeline[i]["wave_shape"],
+            BASE_FREQUENCIES[timeline[i]["base_freq"]],
+            timeline[i]["key"], timeline[i]["harmonic_steps"],
+            timeline[i]["length"],
+            timeline[i]["envelope"]
+        )
         tone.normalize(MAX_DEPTH * (0.9 * timeline[i]["velocity"]))
 
         # set if the timeline element has any effect to be applied
         if "echo" in timeline[i]:
-            tone = effect.echo(tone, timeline[i]["echo"][0], timeline[i]["echo"][1], timeline[i]["echo"][2], timeline[i]["echo"][3])
-        audio = combine_audio(audio, tone.sample_data, timeline[i]["start_sample"], combine_mode=timeline[i]["combine"])
+            tone = effect.echo(
+                tone,
+                timeline[i]["echo"][0],
+                timeline[i]["echo"][1],
+                timeline[i]["echo"][2],
+                timeline[i]["echo"][3]
+            )
+        audio = combine_audio(
+            audio,
+            tone.sample_data,
+            timeline[i]["start_sample"],
+            combine_mode=timeline[i]["combine"]
+        )
 
     print("normalizing")
     audio.normalize(MAX_DEPTH * 0.9)
@@ -115,22 +133,26 @@ def render():
     audio.write_sample_data(file_path, sample_rate=SAMPLE_RATE)
     timeline_file_names[current_timeline_id] = file_path
 
-
     print("generating wave image")
     draw_wave_to_screen(1334, 150, audio.sample_data, MAX_DEPTH)
 
     print("Render Complete!")
 
 
-def combine_audio(audio_stream, samples_to_combine, start_position, volume=1, combine_mode=wave_ext.ReadWriteWav.COMBINE_ADD):
+def combine_audio(audio_stream,
+                  samples_to_combine,
+                  start_position,
+                  volume=1,
+                  combine_mode=wave_ext.ReadWriteWav.COMBINE_ADD
+                  ):
     """ Combines two audio streams together
     If the audio_stream is not long enough it will be extended
-    :param audio_stream:            main audio stream sample data
-    :param samples_to_combine:      samples to combine with the main audio stream
-    :param start_position:          combine start position in samples
-    :param volume:                  volume multiplier (default 1)
-    :param combine_mode:            combine mode (default Additive)
-    :return:                        main audio stream
+    :param audio_stream:          main audio stream sample data
+    :param samples_to_combine:    samples to combine with the main audio stream
+    :param start_position:        combine start position in samples
+    :param volume:                volume multiplier (default 1)
+    :param combine_mode:          combine mode (default Additive)
+    :return:                      main audio stream
     """
     start_position = int(start_position)
 
@@ -147,11 +169,19 @@ def combine_audio(audio_stream, samples_to_combine, start_position, volume=1, co
             if i < start_position:
                 audio_stream.add_sample(0)
             else:
-                audio_stream.add_sample(samples_to_combine[i - start_position] * (volume*combine_mode))
+                audio_stream.add_sample(
+                    samples_to_combine[i - start_position] *
+                    (volume*combine_mode)
+                )
         else:
-            audio_stream.combine_samples(i, samples_to_combine[i - start_position] * volume, combine_mode)
+            audio_stream.combine_samples(
+                i,
+                samples_to_combine[i - start_position] * volume,
+                combine_mode
+            )
 
     return audio_stream
+
 
 def draw_wave_to_screen(width, height, audio_wave, bit_depth):
     """ Draw the rendered audio to screen
@@ -181,7 +211,7 @@ def draw_wave_to_screen(width, height, audio_wave, bit_depth):
         # get line height and y position
         samp_value = audio_wave[samp_numb] + bit_depth
         percent = samp_value / (bit_depth * 2)
-        y = int( (1 - percent) * height)
+        y = int((1 - percent) * height)
 
         pixel_color = (255 * percent, 0, 255 * (1-percent))
 
@@ -200,7 +230,6 @@ def draw_wave_to_screen(width, height, audio_wave, bit_depth):
     pygame.display.flip()
 
 
-
 def change_timeline(timeline_id):
     """ Changes timeline id and renders it
 
@@ -212,22 +241,27 @@ def change_timeline(timeline_id):
     timeline = timelines[timeline_id].timeline
     render()
 
+
 # UI button function
 def set_timeline_0():
     """Change to timeline 0"""
     change_timeline(0)
 
+
 def set_timeline_1():
     """Change to timeline 1"""
     change_timeline(1)
+
 
 def set_timeline_2():
     """Change to timeline 2"""
     change_timeline(2)
 
+
 def set_timeline_3():
     """Change to timeline 3"""
     change_timeline(3)
+
 
 def play_audio():
     """Play the current timelines rendered audio
